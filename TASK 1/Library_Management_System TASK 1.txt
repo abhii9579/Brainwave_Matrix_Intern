@@ -1,0 +1,646 @@
+Enter password: ******
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 16
+Server version: 8.0.40 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2024, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+
+// CREATING DATABASE LIBRARY MANAGEMENT SYSTEM
+
+mysql> create database Library_Management_System;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> show databases;
++---------------------------+
+| Database                  |
++---------------------------+
+| abhi                      |
+| db                        |
+| information_schema        |
+| library_management_system |
+| mysql                     |
+| office                    |
+| om                        |
+| performance_schema        |
+| sys                       |
++---------------------------+
+9 rows in set (0.00 sec)
+
+mysql> use  Library_Management_System;
+Database changed
+
+// CREATING TABLE AUTHOR - Stores information about authors, including their first and last names.
+
+mysql> CREATE TABLE Authors (
+    ->     Author_ID INT PRIMARY KEY AUTO_INCREMENT,
+    ->     First_Name VARCHAR(50) NOT NULL,
+    ->     Last_Name VARCHAR(50) NOT NULL
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+// DISPLAY SCHEMA OF AUTHORS TABLE
+
+mysql> desc Authors;
++------------+-------------+------+-----+---------+----------------+
+| Field      | Type        | Null | Key | Default | Extra          |
++------------+-------------+------+-----+---------+----------------+
+| Author_ID  | int         | NO   | PRI | NULL    | auto_increment |
+| First_Name | varchar(50) | NO   |     | NULL    |                |
+| Last_Name  | varchar(50) | NO   |     | NULL    |                |
++------------+-------------+------+-----+---------+----------------+
+3 rows in set (0.00 sec)
+
+// CREATING TABLE PUBLISHERS
+
+mysql> CREATE TABLE Publishers (
+    ->     Publisher_ID INT PRIMARY KEY AUTO_INCREMENT,
+    ->     Name VARCHAR(100) NOT NULL,
+    ->     Address VARCHAR(255)
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+// DISPLAY SCHEMA OF PUBLISHERS - Contains details about publishers, including their name and address.
+
+mysql> desc Publishers;
++--------------+--------------+------+-----+---------+----------------+
+| Field        | Type         | Null | Key | Default | Extra          |
++--------------+--------------+------+-----+---------+----------------+
+| Publisher_ID | int          | NO   | PRI | NULL    | auto_increment |
+| Name         | varchar(100) | NO   |     | NULL    |                |
+| Address      | varchar(255) | YES  |     | NULL    |                |
++--------------+--------------+------+-----+---------+----------------+
+3 rows in set (0.00 sec)
+
+// CREATING TABLE CATEGORIES - Holds different categories of books.
+
+mysql> CREATE TABLE Categories (
+    ->     Category_ID INT PRIMARY KEY AUTO_INCREMENT,
+    ->     Name VARCHAR(50) NOT NULL
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+// DISPLAY SCHEMA OF TABLE CATEGORIES
+
+mysql> desc Categories;
++-------------+-------------+------+-----+---------+----------------+
+| Field       | Type        | Null | Key | Default | Extra          |
++-------------+-------------+------+-----+---------+----------------+
+| Category_ID | int         | NO   | PRI | NULL    | auto_increment |
+| Name        | varchar(50) | NO   |     | NULL    |                |
++-------------+-------------+------+-----+---------+----------------+
+2 rows in set (0.00 sec)
+
+// CREATING TABLE BOOKS -  Contains book details, including title, author, publisher, publication year, category, and the number of copies owned.
+
+mysql> CREATE TABLE Books (
+    ->     ISBN VARCHAR(13) PRIMARY KEY,
+    ->     Title VARCHAR(255) NOT NULL,
+    ->     Author_ID INT,
+    ->     Publisher_ID INT,
+    ->     Publication_Year YEAR,
+    ->     Category_ID INT,
+    ->     Copies_Owned INT DEFAULT 1,
+    ->     FOREIGN KEY (Author_ID) REFERENCES Authors(Author_ID),
+    ->     FOREIGN KEY (Publisher_ID) REFERENCES Publishers(Publisher_ID),
+    ->     FOREIGN KEY (Category_ID) REFERENCES Categories(Category_ID)
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+// DISPLAY SCHEMA OF TABLE BOOKS
+
+mysql> desc Books;
++------------------+--------------+------+-----+---------+-------+
+| Field            | Type         | Null | Key | Default | Extra |
++------------------+--------------+------+-----+---------+-------+
+| ISBN             | varchar(13)  | NO   | PRI | NULL    |       |
+| Title            | varchar(255) | NO   |     | NULL    |       |
+| Author_ID        | int          | YES  | MUL | NULL    |       |
+| Publisher_ID     | int          | YES  | MUL | NULL    |       |
+| Publication_Year | year         | YES  |     | NULL    |       |
+| Category_ID      | int          | YES  | MUL | NULL    |       |
+| Copies_Owned     | int          | YES  |     | 1       |       |
++------------------+--------------+------+-----+---------+-------+
+7 rows in set (0.00 sec)
+
+// CREATING TABLE PATRONS - Stores information about library patrons, including their contact details and status
+
+mysql>
+mysql> CREATE TABLE Patrons (
+    ->     Patron_ID INT PRIMARY KEY AUTO_INCREMENT,
+    ->     First_Name VARCHAR(50) NOT NULL,
+    ->     Last_Name VARCHAR(50) NOT NULL,
+    ->     Email VARCHAR(100),
+    ->     Phone_Number VARCHAR(15),
+    ->     Status ENUM('Active', 'Blocked') DEFAULT 'Active'
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+// DISPLAY SCHEMA OF TABLE PATRONS
+
+mysql> desc Patrons;
++--------------+--------------------------+------+-----+---------+----------------+
+| Field        | Type                     | Null | Key | Default | Extra          |
++--------------+--------------------------+------+-----+---------+----------------+
+| Patron_ID    | int                      | NO   | PRI | NULL    | auto_increment |
+| First_Name   | varchar(50)              | NO   |     | NULL    |                |
+| Last_Name    | varchar(50)              | NO   |     | NULL    |                |
+| Email        | varchar(100)             | YES  |     | NULL    |                |
+| Phone_Number | varchar(15)              | YES  |     | NULL    |                |
+| Status       | enum('Active','Blocked') | YES  |     | Active  |                |
++--------------+--------------------------+------+-----+---------+----------------+
+6 rows in set (0.00 sec)
+
+// CREATING TABLE LOANS - Tracks book loans with details about the patron, issue date, due date, and return date.
+
+mysql> CREATE TABLE Loans (
+    ->     Loan_ID INT PRIMARY KEY AUTO_INCREMENT,
+    ->     Patron_ID INT,
+    ->     ISBN VARCHAR(13),
+    ->     Issue_Date DATE NOT NULL,
+    ->     Due_Date DATE NOT NULL,
+    ->     Return_Date DATE DEFAULT NULL,
+    ->     FOREIGN KEY (Patron_ID) REFERENCES Patrons(Patron_ID),
+    ->     FOREIGN KEY (ISBN) REFERENCES Books(ISBN)
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+// DISPLAY SCHEMA OF TABLE LOANS
+
+mysql> desc Loans;
++-------------+-------------+------+-----+---------+----------------+
+| Field       | Type        | Null | Key | Default | Extra          |
++-------------+-------------+------+-----+---------+----------------+
+| Loan_ID     | int         | NO   | PRI | NULL    | auto_increment |
+| Patron_ID   | int         | YES  | MUL | NULL    |                |
+| ISBN        | varchar(13) | YES  | MUL | NULL    |                |
+| Issue_Date  | date        | NO   |     | NULL    |                |
+| Due_Date    | date        | NO   |     | NULL    |                |
+| Return_Date | date        | YES  |     | NULL    |                |
++-------------+-------------+------+-----+---------+----------------+
+6 rows in set (0.00 sec)
+
+// CREATING TABLES RESERVATIONS - Manages reservations made by patrons for specific books.
+
+mysql> CREATE TABLE Reservations (
+    ->     Reservation_ID INT PRIMARY KEY AUTO_INCREMENT,
+    ->     Patron_ID INT,
+    ->     ISBN VARCHAR(13),
+    ->     Reservation_Date DATE NOT NULL,
+    ->     FOREIGN KEY (Patron_ID) REFERENCES Patrons(Patron_ID),
+    ->     FOREIGN KEY (ISBN) REFERENCES Books(ISBN)
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+//DISPLAY SCHEMA OF TABLE RESERVATIONS
+
+mysql> desc Reservations;
++------------------+-------------+------+-----+---------+----------------+
+| Field            | Type        | Null | Key | Default | Extra          |
++------------------+-------------+------+-----+---------+----------------+
+| Reservation_ID   | int         | NO   | PRI | NULL    | auto_increment |
+| Patron_ID        | int         | YES  | MUL | NULL    |                |
+| ISBN             | varchar(13) | YES  | MUL | NULL    |                |
+| Reservation_Date | date        | NO   |     | NULL    |                |
++------------------+-------------+------+-----+---------+----------------+
+4 rows in set (0.00 sec)
+
+// ALL REQUIRED TABLES ARE CREATED NOW 
+
+mysql> show tables;
++-------------------------------------+
+| Tables_in_library_management_system |
++-------------------------------------+
+| authors                             |
+| books                               |
+| categories                          |
+| loans                               |
+| patrons                             |
+| publishers                          |
+| reservations                        |
++-------------------------------------+
+7 rows in set (0.00 sec)
+
+// NOW LET'S INSERT DATA INTO THOSE TABLES
+
+mysql> select * from Authors;
+Empty set (0.00 sec)
+
+// BEFORE INSERTING , FIRST LET'S SEE THE SCHEMA OF AUTHOR TABLE
+
+mysql> desc authors;
++------------+-------------+------+-----+---------+----------------+
+| Field      | Type        | Null | Key | Default | Extra          |
++------------+-------------+------+-----+---------+----------------+
+| Author_ID  | int         | NO   | PRI | NULL    | auto_increment |
+| First_Name | varchar(50) | NO   |     | NULL    |                |
+| Last_Name  | varchar(50) | NO   |     | NULL    |                |
++------------+-------------+------+-----+---------+----------------+
+3 rows in set (0.00 sec)
+
+// INSERTING VALUES TO AUTHORS TABLE
+
+mysql> INSERT INTO Authors (First_Name, Last_Name) VALUES
+    -> ('George', 'Orwell'),
+    -> ('J.K.', 'Rowling'),
+    -> ('J.R.R.', 'Tolkien'),
+    -> ('Agatha', 'Christie'),
+    -> ('Isaac', 'Asimov');
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+// DISPLAYING INSERTED DATA FROM AUTHORS TABLE
+
+mysql> select * from Authors;
++-----------+------------+-----------+
+| Author_ID | First_Name | Last_Name |
++-----------+------------+-----------+
+|         1 | George     | Orwell    |
+|         2 | J.K.       | Rowling   |
+|         3 | J.R.R.     | Tolkien   |
+|         4 | Agatha     | Christie  |
+|         5 | Isaac      | Asimov    |
++-----------+------------+-----------+
+5 rows in set (0.00 sec)
+
+//DISPLAY SCHEMA OF PUBLISHERS TABLE
+
+mysql> desc publishers;
++--------------+--------------+------+-----+---------+----------------+
+| Field        | Type         | Null | Key | Default | Extra          |
++--------------+--------------+------+-----+---------+----------------+
+| Publisher_ID | int          | NO   | PRI | NULL    | auto_increment |
+| Name         | varchar(100) | NO   |     | NULL    |                |
+| Address      | varchar(255) | YES  |     | NULL    |                |
++--------------+--------------+------+-----+---------+----------------+
+3 rows in set (0.00 sec)
+
+// INSERTING DATA TO PUBLISHERS TABLE
+
+mysql> INSERT INTO Publishers (Name, Address) VALUES
+    -> ('Penguin Books', '80 Strand, London, WC2R 0RL, UK'),
+    -> ('Bloomsbury Publishing', '50 Bedford Square, London, WC1B 3DP, UK'),
+    -> ('HarperCollins', '195 Broadway, New York, NY 10007, USA'),
+    -> ('Random House', '1745 Broadway, New York, NY 10019, USA');
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+// DISPLAY DATA FROM PUBLISHERS TABLE
+
+mysql> select * from Publishers;
++--------------+-----------------------+-----------------------------------------+
+| Publisher_ID | Name                  | Address                                 |
++--------------+-----------------------+-----------------------------------------+
+|            1 | Penguin Books         | 80 Strand, London, WC2R 0RL, UK         |
+|            2 | Bloomsbury Publishing | 50 Bedford Square, London, WC1B 3DP, UK |
+|            3 | HarperCollins         | 195 Broadway, New York, NY 10007, USA   |
+|            4 | Random House          | 1745 Broadway, New York, NY 10019, USA  |
++--------------+-----------------------+-----------------------------------------+
+4 rows in set (0.00 sec)
+
+// CHECK SCHEMA OF CATEGORIES TABLE
+
+mysql> desc categories;
++-------------+-------------+------+-----+---------+----------------+
+| Field       | Type        | Null | Key | Default | Extra          |
++-------------+-------------+------+-----+---------+----------------+
+| Category_ID | int         | NO   | PRI | NULL    | auto_increment |
+| Name        | varchar(50) | NO   |     | NULL    |                |
++-------------+-------------+------+-----+---------+----------------+
+2 rows in set (0.00 sec)
+
+//INSERTING DATA TO CATEGORIES TABLE
+
+mysql> INSERT INTO Categories (Name) VALUES
+    -> ('Fiction'),
+    -> ('Fantasy'),
+    -> ('Mystery'),
+    -> ('Science Fiction'),
+    -> ('Non-Fiction');
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+// DISPLAY DATA FROM CATEGORIES TABLE
+
+mysql> select * from Categories;
++-------------+-----------------+
+| Category_ID | Name            |
++-------------+-----------------+
+|           1 | Fiction         |
+|           2 | Fantasy         |
+|           3 | Mystery         |
+|           4 | Science Fiction |
+|           5 | Non-Fiction     |
++-------------+-----------------+
+5 rows in set (0.00 sec)
+
+// BOOKS TABLE
+
+mysql> desc books;
++------------------+--------------+------+-----+---------+-------+
+| Field            | Type         | Null | Key | Default | Extra |
++------------------+--------------+------+-----+---------+-------+
+| ISBN             | varchar(13)  | NO   | PRI | NULL    |       |
+| Title            | varchar(255) | NO   |     | NULL    |       |
+| Author_ID        | int          | YES  | MUL | NULL    |       |
+| Publisher_ID     | int          | YES  | MUL | NULL    |       |
+| Publication_Year | year         | YES  |     | NULL    |       |
+| Category_ID      | int          | YES  | MUL | NULL    |       |
+| Copies_Owned     | int          | YES  |     | 1       |       |
++------------------+--------------+------+-----+---------+-------+
+7 rows in set (0.00 sec)
+
+// INSERTING DATA TO BOOKS TABLE
+
+mysql> INSERT INTO Books (ISBN, Title, Author_ID, Publisher_ID, Publication_Year, Category_ID, Copies_Owned) VALUES
+    -> ('9780451524935', '1984', 1, 1, 1949, 1, 5),
+    -> ('9780747532743', 'Harry Potter and the Philosopher\'s Stone', 2, 2, 1997, 2, 10),
+    -> ('9780544003415', 'The Hobbit', 3, 2, 1937, 2, 7),
+    -> ('9780062073488', 'Murder on the Orient Express', 4, 3, 1934, 3, 4),
+    -> ('9780553293357', 'Foundation', 5, 4, 1951, 4, 6);
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+// DISPLAY DATA FROM BOOKS TABLE
+
+mysql> select * from books;
++---------------+------------------------------------------+-----------+--------------+------------------+-------------+--------------+
+| ISBN          | Title                                    | Author_ID | Publisher_ID | Publication_Year | Category_ID | Copies_Owned |
++---------------+------------------------------------------+-----------+--------------+------------------+-------------+--------------+
+| 9780062073488 | Murder on the Orient Express             |         4 |
+3 |             1934 |           3 |            4 |
+| 9780451524935 | 1984                                     |         1 |
+1 |             1949 |           1 |            5 |
+| 9780544003415 | The Hobbit                               |         3 |
+2 |             1937 |           2 |            7 |
+| 9780553293357 | Foundation                               |         5 |
+4 |             1951 |           4 |            6 |
+| 9780747532743 | Harry Potter and the Philosopher's Stone |         2 |
+2 |             1997 |           2 |           10 |
++---------------+------------------------------------------+-----------+--------------+------------------+-------------+--------------+
+5 rows in set (0.00 sec)
+
+// PATRONS TABLE
+
+mysql> desc Patrons;
++--------------+--------------------------+------+-----+---------+----------------+
+| Field        | Type                     | Null | Key | Default | Extra          |
++--------------+--------------------------+------+-----+---------+----------------+
+| Patron_ID    | int                      | NO   | PRI | NULL    | auto_increment |
+| First_Name   | varchar(50)              | NO   |     | NULL    |                |
+| Last_Name    | varchar(50)              | NO   |     | NULL    |                |
+| Email        | varchar(100)             | YES  |     | NULL    |                |
+| Phone_Number | varchar(15)              | YES  |     | NULL    |                |
+| Status       | enum('Active','Blocked') | YES  |     | Active  |                |
++--------------+--------------------------+------+-----+---------+----------------+
+6 rows in set (0.00 sec)
+
+// INSERTING DATA TO PATRONS
+
+mysql> INSERT INTO Patrons (First_Name, Last_Name, Email, Phone_Number) VALUES
+    -> ('Alice', 'Smith', 'alice.smith@example.com', '123-456-7890'),
+    -> ('Bob', 'Johnson', 'bob.johnson@example.com', '234-567-8901'),
+    -> ('Charlie', 'Brown', 'charlie.brown@example.com', '345-678-9012'),
+    -> ('Diana', 'Prince', 'diana.prince@example.com', '456-789-0123');
+Query OK, 4 rows affected (0.00 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+// DISPLAY DATA FROM PATRONS
+
+mysql> select * from Patrons;
++-----------+------------+-----------+---------------------------+--------------+--------+
+| Patron_ID | First_Name | Last_Name | Email                     | Phone_Number | Status |
++-----------+------------+-----------+---------------------------+--------------+--------+
+|         1 | Alice      | Smith     | alice.smith@example.com   | 123-456-7890 | Active |
+|         2 | Bob        | Johnson   | bob.johnson@example.com   | 234-567-8901 | Active |
+|         3 | Charlie    | Brown     | charlie.brown@example.com | 345-678-9012 | Active |
+|         4 | Diana      | Prince    | diana.prince@example.com  | 456-789-0123 | Active |
++-----------+------------+-----------+---------------------------+--------------+--------+
+4 rows in set (0.00 sec)
+
+// LOANS TABLE
+
+mysql> desc Loans;
++-------------+-------------+------+-----+---------+----------------+
+| Field       | Type        | Null | Key | Default | Extra          |
++-------------+-------------+------+-----+---------+----------------+
+| Loan_ID     | int         | NO   | PRI | NULL    | auto_increment |
+| Patron_ID   | int         | YES  | MUL | NULL    |                |
+| ISBN        | varchar(13) | YES  | MUL | NULL    |                |
+| Issue_Date  | date        | NO   |     | NULL    |                |
+| Due_Date    | date        | NO   |     | NULL    |                |
+| Return_Date | date        | YES  |     | NULL    |                |
++-------------+-------------+------+-----+---------+----------------+
+6 rows in set (0.00 sec)
+
+// INSERTING DATA TO LOANS TABLE
+
+mysql> INSERT INTO Loans (Patron_ID, ISBN, Issue_Date, Due_Date) VALUES
+    -> (1, '9780451524935', '2024-11-01', '2024-11-15'), -- Alice borrows "1984"
+    -> (2, '9780747532743', '2024-11-02', '2024-11-16'), -- Bob borrows "Harry Potter"
+    -> (3, '9780544003415', '2024-11-03', '2024-11-17'); -- Charlie borrows "The Hobbit"
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+// DISPLAY DATA FROM LOANS
+
+mysql> select * from Loans;
++---------+-----------+---------------+------------+------------+-------------+
+| Loan_ID | Patron_ID | ISBN          | Issue_Date | Due_Date   | Return_Date |
++---------+-----------+---------------+------------+------------+-------------+
+|       1 |         1 | 9780451524935 | 2024-11-01 | 2024-11-15 | NULL        |
+|       2 |         2 | 9780747532743 | 2024-11-02 | 2024-11-16 | NULL        |
+|       3 |         3 | 9780544003415 | 2024-11-03 | 2024-11-17 | NULL        |
++---------+-----------+---------------+------------+------------+-------------+
+3 rows in set (0.00 sec)
+
+// RESERVATION TABLE 
+
+mysql> desc Reservations;
++------------------+-------------+------+-----+---------+----------------+
+| Field            | Type        | Null | Key | Default | Extra          |
++------------------+-------------+------+-----+---------+----------------+
+| Reservation_ID   | int         | NO   | PRI | NULL    | auto_increment |
+| Patron_ID        | int         | YES  | MUL | NULL    |                |
+| ISBN             | varchar(13) | YES  | MUL | NULL    |                |
+| Reservation_Date | date        | NO   |     | NULL    |                |
++------------------+-------------+------+-----+---------+----------------+
+4 rows in set (0.00 sec)
+
+// INSERTING DATA TO RESERVATIONS
+
+mysql> INSERT INTO Reservations (Patron_ID, ISBN, Reservation_Date) VALUES
+    -> (1, '9780062073488', '2024-11-04'), -- Alice reserves "Murder on the Orient Express"
+    -> (2, '9780553293357', '2024-11-05'); -- Bob reserves "Foundation"
+Query OK, 2 rows affected (0.01 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+// DISPLAY DATA FROM RESERVATIONS
+
+mysql> select * from Reservations;
++----------------+-----------+---------------+------------------+
+| Reservation_ID | Patron_ID | ISBN          | Reservation_Date |
++----------------+-----------+---------------+------------------+
+|              1 |         1 | 9780062073488 | 2024-11-04       |
+|              2 |         2 | 9780553293357 | 2024-11-05       |
++----------------+-----------+---------------+------------------+
+2 rows in set (0.00 sec)
+
+// RETRIEVING ALL BOOKS
+
+mysql> SELECT * FROM Books;
++---------------+------------------------------------------+-----------+--------------+------------------+-------------+--------------+
+| ISBN          | Title                                    | Author_ID | Publisher_ID | Publication_Year | Category_ID | Copies_Owned |
++---------------+------------------------------------------+-----------+--------------+------------------+-------------+--------------+
+| 9780062073488 | Murder on the Orient Express             |         4 |
+3 |             1934 |           3 |            4 |
+| 9780451524935 | 1984                                     |         1 |
+1 |             1949 |           1 |            5 |
+| 9780544003415 | The Hobbit                               |         3 |
+2 |             1937 |           2 |            7 |
+| 9780553293357 | Foundation                               |         5 |
+4 |             1951 |           4 |            6 |
+| 9780747532743 | Harry Potter and the Philosopher's Stone |         2 |
+2 |             1997 |           2 |           10 |
++---------------+------------------------------------------+-----------+--------------+------------------+-------------+--------------+
+5 rows in set (0.00 sec)
+
+// FINDING ALL BOOKS BY  SPECIFIC AUTHOR
+
+mysql> SELECT B.Title
+    -> FROM Books B
+    -> JOIN Authors A ON B.Author_ID = A.Author_ID
+    -> WHERE A.First_Name = 'J.K.' AND A.Last_Name = 'Rowling';
++------------------------------------------+
+| Title                                    |
++------------------------------------------+
+| Harry Potter and the Philosopher's Stone |
++------------------------------------------+
+1 row in set (0.00 sec)
+
+// GETTING ALL LOANS FROM SPECIFIC PATRON
+
+mysql> SELECT L.Loan_ID, B.Title, L.Issue_Date, L.Due_Date
+    -> FROM Loans L
+    -> JOIN Books B ON L.ISBN = B.ISBN
+    -> JOIN Patrons P ON L.Patron_ID = P.Patron_ID
+    -> WHERE P.First_Name = 'Alice' AND P.Last_Name = 'Smith';
++---------+-------+------------+------------+
+| Loan_ID | Title | Issue_Date | Due_Date   |
++---------+-------+------------+------------+
+|       1 | 1984  | 2024-11-01 | 2024-11-15 |
++---------+-------+------------+------------+
+1 row in set (0.00 sec)
+
+
+// LISTING ALL RESERVATIONS
+
+mysql> SELECT R.Reservation_ID, P.First_Name, P.Last_Name, B.Title, R.Reservation_Date
+    -> FROM Reservations R
+    -> JOIN Patrons P ON R.Patron_ID = P.Patron_ID
+    -> JOIN Books B ON R.ISBN = B.ISBN;
++----------------+------------+-----------+------------------------------+------------------+
+| Reservation_ID | First_Name | Last_Name | Title                        | Reservation_Date |
++----------------+------------+-----------+------------------------------+------------------+
+|              1 | Alice      | Smith     | Murder on the Orient Express | 2024-11-04       |
+|              2 | Bob        | Johnson   | Foundation                   | 2024-11-05       |
++----------------+------------+-----------+------------------------------+------------------+
+2 rows in set (0.00 sec)
+
+// LETS UPDATE RECORD 
+
+mysql> UPDATE Books
+    -> SET Copies_Owned = Copies_Owned + 1
+    -> WHERE ISBN = '9780451524935';
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from Books;
++---------------+------------------------------------------+-----------+--------------+------------------+-------------+--------------+
+| ISBN          | Title                                    | Author_ID | Publisher_ID | Publication_Year | Category_ID | Copies_Owned |
++---------------+------------------------------------------+-----------+--------------+------------------+-------------+--------------+
+| 9780062073488 | Murder on the Orient Express             |         4 |
+3 |             1934 |           3 |            4 |
+| 9780451524935 | 1984                                     |         1 |
+1 |             1949 |           1 |            6 |
+| 9780544003415 | The Hobbit                               |         3 |
+2 |             1937 |           2 |            7 |
+| 9780553293357 | Foundation                               |         5 |
+4 |             1951 |           4 |            6 |
+| 9780747532743 | Harry Potter and the Philosopher's Stone |         2 |
+2 |             1997 |           2 |           10 |
++---------------+------------------------------------------+-----------+--------------+------------------+-------------+--------------+
+5 rows in set (0.00 sec)
+
+//LET'S CHANGE PATRON STATUS
+
+mysql> UPDATE Patrons
+    -> SET Status = 'Blocked'
+    -> WHERE Patron_ID = 1; -- Assuming Alice's Patron_ID is 1
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from Patrons;
++-----------+------------+-----------+---------------------------+--------------+---------+
+| Patron_ID | First_Name | Last_Name | Email                     | Phone_Number | Status  |
++-----------+------------+-----------+---------------------------+--------------+---------+
+|         1 | Alice      | Smith     | alice.smith@example.com   | 123-456-7890 | Blocked |
+|         2 | Bob        | Johnson   | bob.johnson@example.com   | 234-567-8901 | Active  |
+|         3 | Charlie    | Brown     | charlie.brown@example.com | 345-678-9012 | Active  |
+|         4 | Diana      | Prince    | diana.prince@example.com  | 456-789-0123 | Active  |
++-----------+------------+-----------+---------------------------+--------------+---------+
+4 rows in set (0.00 sec)
+
+mysql> select * from loans;
++---------+-----------+---------------+------------+------------+-------------+
+| Loan_ID | Patron_ID | ISBN          | Issue_Date | Due_Date   | Return_Date |
++---------+-----------+---------------+------------+------------+-------------+
+|       1 |         1 | 9780451524935 | 2024-11-01 | 2024-11-15 | NULL        |
+|       2 |         2 | 9780747532743 | 2024-11-02 | 2024-11-16 | NULL        |
+|       3 |         3 | 9780544003415 | 2024-11-03 | 2024-11-17 | NULL        |
++---------+-----------+---------------+------------+------------+-------------+
+3 rows in set (0.00 sec)
+
+// LET'S DELETE LOAN RECORD
+
+mysql> DELETE FROM Loans
+    -> WHERE Loan_ID = 1; -- Assuming the Loan_ID of the record to delete is 1
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select * from loans;
++---------+-----------+---------------+------------+------------+-------------+
+| Loan_ID | Patron_ID | ISBN          | Issue_Date | Due_Date   | Return_Date |
++---------+-----------+---------------+------------+------------+-------------+
+|       2 |         2 | 9780747532743 | 2024-11-02 | 2024-11-16 | NULL        |
+|       3 |         3 | 9780544003415 | 2024-11-03 | 2024-11-17 | NULL        |
++---------+-----------+---------------+------------+------------+-------------+
+2 rows in set (0.00 sec)
+
+// LET'S REMOVE RESERVATION
+
+mysql> select * from Reservations;
++----------------+-----------+---------------+------------------+
+| Reservation_ID | Patron_ID | ISBN          | Reservation_Date |
++----------------+-----------+---------------+------------------+
+|              1 |         1 | 9780062073488 | 2024-11-04       |
+|              2 |         2 | 9780553293357 | 2024-11-05       |
++----------------+-----------+---------------+------------------+
+2 rows in set (0.00 sec)
+
+mysql> DELETE FROM Reservations
+    -> WHERE Reservation_ID = 1; -- Assuming the Reservation_ID is 1
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from Reservations;
++----------------+-----------+---------------+------------------+
+| Reservation_ID | Patron_ID | ISBN          | Reservation_Date |
++----------------+-----------+---------------+------------------+
+|              2 |         2 | 9780553293357 | 2024-11-05       |
++----------------+-----------+---------------+------------------+
+1 row in set (0.00 sec)
