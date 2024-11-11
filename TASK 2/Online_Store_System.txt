@@ -1,0 +1,485 @@
+Enter password: ******
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 20
+Server version: 8.0.40 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2024, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> show databases;
++---------------------------+
+| Database                  |
++---------------------------+
+| abhi                      |
+| db                        |
+| information_schema        |
+| library_management_system |
+| mysql                     |
+| office                    |
+| om                        |
+| performance_schema        |
+| sys                       |
++---------------------------+
+9 rows in set (0.00 sec)
+
+// CREATING DATABASE FOR ONLINE STORE
+
+mysql> create database Online_Store;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> show databases;
++---------------------------+
+| Database                  |
++---------------------------+
+| abhi                      |
+| db                        |
+| information_schema        |
+| library_management_system |
+| mysql                     |
+| office                    |
+| om                        |
+| online_store              |
+| performance_schema        |
+| sys                       |
++---------------------------+
+10 rows in set (0.00 sec)
+
+mysql> use Online_Store;
+Database changed
+
+// CREATING TABLE PRODUCTS
+
+mysql> CREATE TABLE Products (
+    ->     ProductID INT PRIMARY KEY,
+    ->     ProductName VARCHAR(255),
+    ->     Price DECIMAL(10, 2),
+    ->     Stock INT
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+// DISPLAYING SCHEMA OF PRODUCTS
+
+mysql> desc Products;
++-------------+---------------+------+-----+---------+-------+
+| Field       | Type          | Null | Key | Default | Extra |
++-------------+---------------+------+-----+---------+-------+
+| ProductID   | int           | NO   | PRI | NULL    |       |
+| ProductName | varchar(255)  | YES  |     | NULL    |       |
+| Price       | decimal(10,2) | YES  |     | NULL    |       |
+| Stock       | int           | YES  |     | NULL    |       |
++-------------+---------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
+// CREATING TABLE OF CUSTOMERS
+
+mysql> CREATE TABLE Customers (
+    ->     CustomerID INT PRIMARY KEY,
+    ->     CustName VARCHAR(255),
+    ->     Email VARCHAR(255),
+    ->     Phone VARCHAR(20)
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+// DISPLAYING SCHEMA OF CUSTOMER TABLE
+
+mysql> desc Customers;
++------------+--------------+------+-----+---------+-------+
+| Field      | Type         | Null | Key | Default | Extra |
++------------+--------------+------+-----+---------+-------+
+| CustomerID | int          | NO   | PRI | NULL    |       |
+| CustName   | varchar(255) | YES  |     | NULL    |       |
+| Email      | varchar(255) | YES  |     | NULL    |       |
+| Phone      | varchar(20)  | YES  |     | NULL    |       |
++------------+--------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+// CREATING TABLE ORDER
+
+mysql> CREATE TABLE Orders (
+    ->     OrderID INT PRIMARY KEY,
+    ->     OrderDate DATE,
+    ->     CustomerID INT,
+    ->     FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+// DISPLAYING SCHEMA OF ORDERS TABLE
+
+mysql> desc Orders;
++------------+------+------+-----+---------+-------+
+| Field      | Type | Null | Key | Default | Extra |
++------------+------+------+-----+---------+-------+
+| OrderID    | int  | NO   | PRI | NULL    |       |
+| OrderDate  | date | YES  |     | NULL    |       |
+| CustomerID | int  | YES  | MUL | NULL    |       |
++------------+------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+// CREATING PAYMENTS TABLE
+
+mysql> CREATE TABLE Payments (
+    ->     PaymentID INT PRIMARY KEY,
+    ->     OrderID INT,
+    ->     Amount DECIMAL(10, 2),
+    ->     PaymentDate DATE,
+    ->     FOREIGN KEY (OrderID) REFERENCES Orders(OrderID)
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+//DISPLAYING SCHEMA OF PAYEMENTS TABLE
+
+mysql> desc Payments;
++-------------+---------------+------+-----+---------+-------+
+| Field       | Type          | Null | Key | Default | Extra |
++-------------+---------------+------+-----+---------+-------+
+| PaymentID   | int           | NO   | PRI | NULL    |       |
+| OrderID     | int           | YES  | MUL | NULL    |       |
+| Amount      | decimal(10,2) | YES  |     | NULL    |       |
+| PaymentDate | date          | YES  |     | NULL    |       |
++-------------+---------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+// CHECKING TABLES PRESENT IN OUR DATABASE'
+
+mysql> show tables;
++------------------------+
+| Tables_in_online_store |
++------------------------+
+| customers              |
+| orders                 |
+| payments               |
+| products               |
++------------------------+
+4 rows in set (0.00 sec)
+
+// PRODUCTS TABLE
+
+mysql> desc Products;
++-------------+---------------+------+-----+---------+-------+
+| Field       | Type          | Null | Key | Default | Extra |
++-------------+---------------+------+-----+---------+-------+
+| ProductID   | int           | NO   | PRI | NULL    |       |
+| ProductName | varchar(255)  | YES  |     | NULL    |       |
+| Price       | decimal(10,2) | YES  |     | NULL    |       |
+| Stock       | int           | YES  |     | NULL    |       |
++-------------+---------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+//INSERTING DATA TO PRODUCTS TABLE
+
+mysql> INSERT INTO Products (ProductID, ProductName, Price, Stock) VALUES
+    -> (1, 'Laptop', 999.99, 50),
+    -> (2, 'Smartphone', 499.99, 100),
+    -> (3, 'Headphones', 199.99, 200);
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+// DISPLAYING RECORDS FROM PRODUCTS TABLE
+
+mysql> select * from Products;
++-----------+-------------+--------+-------+
+| ProductID | ProductName | Price  | Stock |
++-----------+-------------+--------+-------+
+|         1 | Laptop      | 999.99 |    50 |
+|         2 | Smartphone  | 499.99 |   100 |
+|         3 | Headphones  | 199.99 |   200 |
++-----------+-------------+--------+-------+
+3 rows in set (0.00 sec)
+
+// CUSTOMERS TABLE
+
+mysql> desc Customers;
++------------+--------------+------+-----+---------+-------+
+| Field      | Type         | Null | Key | Default | Extra |
++------------+--------------+------+-----+---------+-------+
+| CustomerID | int          | NO   | PRI | NULL    |       |
+| CustName   | varchar(255) | YES  |     | NULL    |       |
+| Email      | varchar(255) | YES  |     | NULL    |       |
+| Phone      | varchar(20)  | YES  |     | NULL    |       |
++------------+--------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+// INSERTING DATA TO CUSTOMERS 
+
+mysql> INSERT INTO Customers (CustomerID, CustName, Email, Phone) VALUES
+    -> (1, 'John Doe', 'john@example.com', '123-456-7890'),
+    -> (2, 'Jane Smith', 'jane@example.com', '098-765-4321');
+Query OK, 2 rows affected (0.01 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+// FETCHING RECORDS FROM CUSTOMER TABLE
+
+mysql> select * from Customers;
++------------+------------+------------------+--------------+
+| CustomerID | CustName   | Email            | Phone        |
++------------+------------+------------------+--------------+
+|          1 | John Doe   | john@example.com | 123-456-7890 |
+|          2 | Jane Smith | jane@example.com | 098-765-4321 |
++------------+------------+------------------+--------------+
+2 rows in set (0.00 sec)
+
+//ORDERS TABLE
+
+mysql> desc Orders;
++------------+------+------+-----+---------+-------+
+| Field      | Type | Null | Key | Default | Extra |
++------------+------+------+-----+---------+-------+
+| OrderID    | int  | NO   | PRI | NULL    |       |
+| OrderDate  | date | YES  |     | NULL    |       |
+| CustomerID | int  | YES  | MUL | NULL    |       |
++------------+------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+// INSERTING DATA TO ORDERS TABLE
+
+mysql> INSERT INTO Orders (OrderID, OrderDate, CustomerID) VALUES
+    -> (1, '2024-11-10', 1),
+    -> (2, '2024-11-11', 2);
+Query OK, 2 rows affected (0.01 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+// FETCH RECORD FROM ORDER
+
+mysql> select * from Orders;
++---------+------------+------------+
+| OrderID | OrderDate  | CustomerID |
++---------+------------+------------+
+|       1 | 2024-11-10 |          1 |
+|       2 | 2024-11-11 |          2 |
++---------+------------+------------+
+2 rows in set (0.00 sec)
+
+//SCHEMA OF PAYMENTS
+
+mysql> desc Payments;
++-------------+---------------+------+-----+---------+-------+
+| Field       | Type          | Null | Key | Default | Extra |
++-------------+---------------+------+-----+---------+-------+
+| PaymentID   | int           | NO   | PRI | NULL    |       |
+| OrderID     | int           | YES  | MUL | NULL    |       |
+| Amount      | decimal(10,2) | YES  |     | NULL    |       |
+| PaymentDate | date          | YES  |     | NULL    |       |
++-------------+---------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+// INSERTING DATA TO PAYMENTS
+
+mysql> INSERT INTO Payments (PaymentID, OrderID, Amount, PaymentDate) VALUES
+    -> (1, 1, 999.99, '2024-11-10'),
+    -> (2, 2, 499.99, '2024-11-11');
+Query OK, 2 rows affected (0.01 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+// RECORDS FROM PAYMENTS
+
+mysql> select * from Payments;
++-----------+---------+--------+-------------+
+| PaymentID | OrderID | Amount | PaymentDate |
++-----------+---------+--------+-------------+
+|         1 |       1 | 999.99 | 2024-11-10  |
+|         2 |       2 | 499.99 | 2024-11-11  |
++-----------+---------+--------+-------------+
+2 rows in set (0.00 sec)
+
+// RETRIEVE CUSTOMER ORDERS
+
+mysql> SELECT
+    ->     o.OrderID,
+    ->     o.OrderDate,
+    ->     c.CustName,
+    ->     p.Amount AS PaymentAmount
+    -> FROM
+    ->     Orders o
+    -> JOIN
+    ->     Customers c ON o.CustomerID = c.CustomerID
+    -> JOIN
+    ->     Payments p ON o.OrderID = p.OrderID;
++---------+------------+------------+---------------+
+| OrderID | OrderDate  | CustName   | PaymentAmount |
++---------+------------+------------+---------------+
+|       1 | 2024-11-10 | John Doe   |        999.99 |
+|       2 | 2024-11-11 | Jane Smith |        499.99 |
++---------+------------+------------+---------------+
+2 rows in set (0.00 sec)
+
+// FIND TOTAL SPENT BY EACH CUSTOMERS
+
+mysql> SELECT
+    ->     c.CustName,
+    ->     SUM(p.Amount) AS TotalSpent
+    -> FROM
+    ->     Customers c
+    -> JOIN
+    ->     Orders o ON c.CustomerID = o.CustomerID
+    -> JOIN
+    ->     Payments p ON o.OrderID = p.OrderID
+    -> GROUP BY
+    ->     c.CustName;
++------------+------------+
+| CustName   | TotalSpent |
++------------+------------+
+| John Doe   |     999.99 |
+| Jane Smith |     499.99 |
++------------+------------+
+2 rows in set (0.00 sec)
+
+//LISTING ALL PRODUCTS IN STOCK
+
+mysql> SELECT
+    ->     ProductName,
+    ->     Price,
+    ->     Stock
+    -> FROM
+    ->     Products
+    -> WHERE
+    ->     Stock > 0;
++-------------+--------+-------+
+| ProductName | Price  | Stock |
++-------------+--------+-------+
+| Laptop      | 999.99 |    50 |
+| Smartphone  | 499.99 |   100 |
+| Headphones  | 199.99 |   200 |
++-------------+--------+-------+
+3 rows in set (0.00 sec)
+
+//COUNT TOTAL NO OF ORDERS PLACED
+
+mysql> SELECT COUNT(*) AS TotalOrders FROM Orders;
++-------------+
+| TotalOrders |
++-------------+
+|           2 |
++-------------+
+1 row in set (0.00 sec)
+
+//FIND MOST POPULAR PRODUCT BASED ON SALES 
+
+mysql> SELECT
+    ->     p.ProductName,
+    ->     SUM(p.Stock) AS TotalSold
+    -> FROM
+    ->     Products p
+    -> JOIN
+    ->     Orders o ON p.ProductID = o.OrderID  
+    -> GROUP BY
+    ->     p.ProductName
+    -> ORDER BY
+    ->     TotalSold DESC
+    -> LIMIT 1;  
++-------------+-----------+
+| ProductName | TotalSold |
++-------------+-----------+
+| Smartphone  |       100 |
++-------------+-----------+
+1 row in set (0.00 sec)
+
+// FIND CUSTOMER WHO NOT MADE ANY ORDER
+
+mysql> SELECT
+    ->     c.CustName,
+    ->     c.Email
+    -> FROM
+    ->     Customers c
+    -> LEFT JOIN
+    ->     Orders o ON c.CustomerID = o.CustomerID
+    -> WHERE
+    ->     o.OrderID IS NULL;
+Empty set (0.00 sec)
+
+// CALCULATE TOTAL REVENUE
+
+mysql> SELECT SUM(Amount) AS TotalRevenue FROM Payments;
++--------------+
+| TotalRevenue |
++--------------+
+|      1499.98 |
++--------------+
+1 row in set (0.00 sec)
+
+//LISTING ALL PRODUCTS SOLD IN SPECIFIC ORDER
+
+mysql> SELECT
+    ->     p.ProductName,
+    ->     p.Price
+    -> FROM
+    ->     Products p
+    -> JOIN
+    ->     Orders o ON p.ProductID = o.OrderID  
+    -> WHERE
+    ->     o.OrderID = 1;  
++-------------+--------+
+| ProductName | Price  |
++-------------+--------+
+| Laptop      | 999.99 |
++-------------+--------+
+1 row in set (0.00 sec)
+
+//FIND PAYMENTS MADE ON SPECIFIC DATE
+
+mysql> SELECT
+    ->     p.PaymentID,
+    ->     p.Amount,
+    ->     c.CustName,
+    ->     o.OrderDate
+    -> FROM
+    ->     Payments p
+    -> JOIN
+    ->     Orders o ON p.OrderID = o.OrderID
+    -> JOIN
+    ->     Customers c ON o.CustomerID = c.CustomerID
+    -> WHERE
+    ->     p.PaymentDate = '2024-11-11';  
++-----------+--------+------------+------------+
+| PaymentID | Amount | CustName   | OrderDate  |
++-----------+--------+------------+------------+
+|         2 | 499.99 | Jane Smith | 2024-11-11 |
++-----------+--------+------------+------------+
+1 row in set (0.00 sec)
+
+//FETCH ORDER DETAILS BY CUSTOMER ID
+mysql> SELECT
+    ->     o.OrderID,
+    ->     o.OrderDate,
+    ->     p.ProductName,
+    ->     p.Price
+    -> FROM
+    ->     Orders o
+    -> JOIN
+    ->     Customers c ON o.CustomerID = c.CustomerID
+    -> JOIN
+    ->     Payments pay ON o.OrderID = pay.OrderID
+    -> JOIN
+    ->     Products p ON pay.OrderID = o.OrderID  
+    -> WHERE
+    ->     c.CustomerID = 1;
+ +---------+------------+-------------+--------+
+| OrderID | OrderDate  | ProductName | Price  |
++---------+------------+-------------+--------+
+|       1 | 2024-11-10 | Laptop      | 999.99 |
+|       1 | 2024-11-10 | Smartphone  | 499.99 |
+|       1 | 2024-11-10 | Headphones  | 199.99 |
++---------+------------+-------------+--------+
+3 rows in set (0.00 sec)
+
+//UPDATE PRODUCT STOCK AFTER ORDER
+
+mysql> UPDATE Products
+    -> SET Stock = Stock - 1  -- Assuming one product is sold
+    -> WHERE ProductID = 1;   -- Replace with the actual ProductID from the order
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from Products;
++-----------+-------------+--------+-------+
+| ProductID | ProductName | Price  | Stock |
++-----------+-------------+--------+-------+
+|         1 | Laptop      | 999.99 |    49 |
+|         2 | Smartphone  | 499.99 |   100 |
+|         3 | Headphones  | 199.99 |   200 |
++-----------+-------------+--------+-------+
+3 rows in set (0.00 sec)
